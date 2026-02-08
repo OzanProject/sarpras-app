@@ -52,6 +52,12 @@ class RoleController extends Controller
   public function update(Request $request, Role $role)
   {
     Gate::authorize('role.edit');
+
+    // PROTECT ADMIN ROLE (ID 1)
+    if ($role->id == 1) {
+      return back()->with('error', 'Role Administrator Utama tidak dapat diubah sembarangan via web. Hubungi developer jika diperlukan.');
+    }
+
     $request->validate([
       'name' => ['required', 'string', 'max:255', 'unique:roles,name,' . $role->id],
       'description' => ['nullable', 'string', 'max:255'],
@@ -72,6 +78,12 @@ class RoleController extends Controller
   public function destroy(Role $role)
   {
     Gate::authorize('role.delete');
+
+    // PROTECT ADMIN ROLE (ID 1)
+    if ($role->id == 1) {
+      return back()->with('error', 'Role Administrator Utama (ID 1) MUTLAK tidak boleh dihapus!');
+    }
+
     if ($role->users()->count() > 0) {
       return back()->with('error', 'Tidak dapat menghapus role ini karena masih digunakan oleh user.');
     }

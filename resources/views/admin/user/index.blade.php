@@ -70,7 +70,7 @@
                                                 <a href="{{ route('user.edit', $user->id) }}" class="btn btn-sm btn-info ms-1"
                                                     title="Edit"><i class="fa fa-edit"></i></a>
 
-                                                @if($user->id != auth()->id())
+                                                @if($user->id != auth()->id() && $user->id != 1)
                                                     <form action="{{ route('user.destroy', $user->id) }}" method="POST"
                                                         class="d-inline"
                                                         onsubmit="return confirm('Hapus user ini? Data peminjaman juga mungkin terhapus (cascade) atau tersimpan tanpa user.')">

@@ -13,25 +13,27 @@
 
                     <div class="mb-3">
                         <label for="name" class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}"
-                            required>
+                        <input type="text" class="form-control" id="name" name="name" required value="{{ old('name', $user->name) }}" {{ $user->id == 1 && auth()->id() != 1 ? 'readonly' : '' }}>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email"
-                            value="{{ old('email', $user->email) }}" required>
+                        <input type="email" class="form-control" id="email" name="email" required value="{{ old('email', $user->email) }}" {{ $user->id == 1 && auth()->id() != 1 ? 'readonly' : '' }}>
                     </div>
 
                     <div class="mb-3">
                         <label for="role_id" class="form-label">Role</label>
-                        <select class="form-select" id="role_id" name="role_id" required>
+                        <select class="form-select" id="role_id" name="role_id" required {{ $user->id == 1 ? 'disabled' : '' }}>
                             @foreach($roles as $role)
-                                <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
-                                    {{ ucfirst($role->name) }}
+                                <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
+                                    {{ ucfirst($role->name) }} 
                                 </option>
                             @endforeach
                         </select>
+                        @if($user->id == 1)
+                        <input type="hidden" name="role_id" value="1">
+                        <small class="text-danger">Role Super Admin tidak dapat diubah.</small>
+                        @endif
                     </div>
 
                     <div class="mb-3">

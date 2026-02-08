@@ -57,6 +57,16 @@ class UserController extends Controller
         \Illuminate\Support\Facades\Gate::authorize('user.edit');
         $user = User::findOrFail($id);
 
+        // PROTECT SUPER ADMIN (ID 1)
+        if ($user->id == 1) {
+            // Only allow updating own profile if authenticated user is ID 1, but prevent changing Role
+            if (auth()->id() != 1) {
+                return back()->with('error', 'Anda tidak memiliki izin untuk mengubah data Super Admin.');
+            }
+            // If ID 1 is updating themselves, force role to remain Admin (ID 1)
+            $request->merge(['role_id' => 1]);
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
@@ -94,6 +104,11 @@ class UserController extends Controller
     {
         \Illuminate\Support\Facades\Gate::authorize('user.delete');
         $user = User::findOrFail($id);
+
+        // PROTECT SUPER ADMIN (ID 1) and SELF DELETION
+        if ($user->id == 1) {
+            return back()->with('error', 'Akun Super Admin (ID 1) tidak dapat dihapus!');
+        }
 
         if ($user->id == auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun sendiri.');
