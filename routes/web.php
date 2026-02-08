@@ -6,19 +6,39 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes handled by Breeze
-require __DIR__.'/auth.php';
+
+// Temporary Debug Route (Remove after fixing login)
+Route::get('/debug-sarpas', function () {
+    $driver = config('session.driver');
+    $path = storage_path('framework/sessions');
+    $isWritable = is_writable($path);
+
+    session(['test_session' => 'Session Working']);
+    $sessionVal = session('test_session');
+
+    return response()->json([
+        'session_driver' => $driver,
+        'storage_path' => $path,
+        'is_writable' => $isWritable,
+        'session_test_value' => $sessionVal,
+        'env_app_url' => env('APP_URL'),
+        'https_status' => request()->secure(),
+    ]);
+});
+
+require __DIR__ . '/auth.php';
 
 Route::get('/', [\App\Http\Controllers\PublicController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
-        
+
     // Allow email verification without approval check (optional, but safer to block everything)
     // For now blocking everything except logout/verify
-    
+
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->name('logout');
+        ->name('logout');
 });
 
 // Protect all other auth routes with 'approved' middleware
@@ -28,7 +48,7 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     // User Self-Service
     Route::post('/peminjaman/request', [\App\Http\Controllers\UserPeminjamanController::class, 'store'])->name('user.peminjaman.store');
     Route::get('/my-loans', [\App\Http\Controllers\UserPeminjamanController::class, 'index'])->name('user.peminjaman.index');
@@ -42,7 +62,7 @@ Route::middleware(['auth', 'approved'])->prefix('admin')->group(function () {
     // Barang Routes
     Route::post('/barang/print', [\App\Http\Controllers\BarangController::class, 'print'])->name('barang.print');
     Route::resource('barang', \App\Http\Controllers\BarangController::class);
-    
+
     // Peminjaman Routes
     Route::get('/peminjaman/active-loans/{barang_id}', [\App\Http\Controllers\PeminjamanController::class, 'activeLoans'])->name('peminjaman.active-loans');
     Route::post('/peminjaman/{id}/return', [\App\Http\Controllers\PeminjamanController::class, 'returnItem'])->name('peminjaman.return');
@@ -50,11 +70,11 @@ Route::middleware(['auth', 'approved'])->prefix('admin')->group(function () {
     Route::post('/peminjaman/{id}/reject', [\App\Http\Controllers\PeminjamanController::class, 'reject'])->name('peminjaman.reject');
     Route::resource('peminjaman', \App\Http\Controllers\PeminjamanController::class);
     Route::resource('maintenance', \App\Http\Controllers\MaintenanceController::class);
-    
+
     // Report Routes
     Route::get('/report', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
     Route::get('/report/print', [\App\Http\Controllers\ReportController::class, 'print'])->name('report.print');
-    
+
     // Scan Routes
     Route::get('/scan', [\App\Http\Controllers\ScanController::class, 'index'])->name('scan.index');
     Route::post('/scan', [\App\Http\Controllers\ScanController::class, 'process'])->name('scan.process');
