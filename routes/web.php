@@ -115,7 +115,11 @@ Route::middleware(['auth', 'approved'])->prefix('admin')->group(function () {
     Route::post('/user/scan', [\App\Http\Controllers\UserScanController::class, 'process'])->name('user.scan.process');
 
     // User Management (Admin Only)
+    Route::resource('role', \App\Http\Controllers\RoleController::class);
+
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('user.index');
+    Route::get('/users/create', [\App\Http\Controllers\UserController::class, 'create'])->name('user.create');
+    Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('user.store');
     Route::get('/users/{id}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('user.edit');
     Route::put('/users/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('user.update');
     Route::post('/users/{id}/approve', [\App\Http\Controllers\UserController::class, 'approve'])->name('user.approve');

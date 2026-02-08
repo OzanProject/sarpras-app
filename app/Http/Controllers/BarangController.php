@@ -11,12 +11,14 @@ class BarangController extends Controller
 {
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.view');
         $barangs = Barang::with('kategori')->latest()->get();
         return view('admin.barang.index', compact('barangs'));
     }
 
     public function create()
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.create');
         $kategoris = Kategori::all();
         $rooms = \App\Models\Room::all();
         return view('admin.barang.create', compact('kategoris', 'rooms'));
@@ -24,6 +26,7 @@ class BarangController extends Controller
 
     public function print(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.print');
         $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'exists:barangs,id',
@@ -36,6 +39,7 @@ class BarangController extends Controller
 
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.create');
         $request->validate([
             'kode_barang' => 'required|unique:barangs,kode_barang',
             'nama' => 'required|string|max:255',
@@ -59,11 +63,13 @@ class BarangController extends Controller
 
     public function show(Barang $barang)
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.view');
         return view('admin.barang.show', compact('barang'));
     }
 
     public function edit(Barang $barang)
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.edit');
         $kategoris = Kategori::all();
         $rooms = \App\Models\Room::all();
         return view('admin.barang.edit', compact('barang', 'kategoris', 'rooms'));
@@ -71,6 +77,7 @@ class BarangController extends Controller
 
     public function update(Request $request, Barang $barang)
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.edit');
         $request->validate([
             'kode_barang' => 'required|unique:barangs,kode_barang,' . $barang->id,
             'nama' => 'required|string|max:255',
@@ -98,6 +105,7 @@ class BarangController extends Controller
 
     public function destroy(Barang $barang)
     {
+        \Illuminate\Support\Facades\Gate::authorize('barang.delete');
         if ($barang->foto) {
             Storage::disk('public')->delete($barang->foto);
         }

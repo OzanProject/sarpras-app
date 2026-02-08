@@ -12,6 +12,7 @@ class RoomController extends Controller
      */
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('room.view');
         $rooms = Room::latest()->get();
         return view('admin.room.index', compact('rooms'));
     }
@@ -21,6 +22,7 @@ class RoomController extends Controller
      */
     public function create()
     {
+        \Illuminate\Support\Facades\Gate::authorize('room.create');
         return view('admin.room.create');
     }
 
@@ -29,6 +31,7 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('room.create');
         $request->validate([
             'nama' => 'required|string|max:255|unique:rooms,nama',
             'keterangan' => 'nullable|string',
@@ -44,6 +47,7 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
+        \Illuminate\Support\Facades\Gate::authorize('room.edit');
         return view('admin.room.edit', compact('room'));
     }
 
@@ -52,6 +56,7 @@ class RoomController extends Controller
      */
     public function update(Request $request, Room $room)
     {
+        \Illuminate\Support\Facades\Gate::authorize('room.edit');
         $request->validate([
             'nama' => 'required|string|max:255|unique:rooms,nama,' . $room->id,
             'keterangan' => 'nullable|string',
@@ -67,6 +72,7 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
+        \Illuminate\Support\Facades\Gate::authorize('room.delete');
         // Check if room has items
         if ($room->barangs()->count() > 0) {
             return back()->with('error', 'Gagal menghapus! Masih ada barang di ruangan ini.');

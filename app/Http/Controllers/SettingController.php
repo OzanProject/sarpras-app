@@ -10,6 +10,7 @@ class SettingController extends Controller
 {
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('setting.view');
         // Fetch all settings and map to key-value array for easy access in view
         $settings = Setting::all()->pluck('value', 'key');
         return view('admin.setting.index', compact('settings'));
@@ -17,6 +18,7 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('setting.view');
         $input = $request->except(['_token', 'logo']);
 
         // Update text fields
@@ -27,7 +29,7 @@ class SettingController extends Controller
         // Handle Logo Upload
         if ($request->hasFile('logo')) {
             $request->validate(['logo' => 'image|mimes:jpeg,png,jpg,gif|max:2048']);
-            
+
             // Delete old logo
             $oldLogo = Setting::where('key', 'logo')->value('value');
             if ($oldLogo) {

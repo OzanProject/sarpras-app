@@ -9,6 +9,7 @@ class ScanController extends Controller
 {
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('scan.view');
         return view('admin.scan.index');
     }
 
@@ -22,17 +23,17 @@ class ScanController extends Controller
 
         // Check for active loans (Items that are currently borrowed)
         $activeLoans = \App\Models\Peminjaman::where('barang_id', $barang->id)
-                        ->where('status', 'dipinjam')
-                        ->exists();
+            ->where('status', 'dipinjam')
+            ->exists();
 
         if ($activeLoans) {
             // Redirect to Active Loans page for Returning
             return redirect()->route('peminjaman.active-loans', $barang->id)
-                             ->with('info', 'Barang sedang dipinjam. Pilih transaksi untuk dikembalikan.');
+                ->with('info', 'Barang sedang dipinjam. Pilih transaksi untuk dikembalikan.');
         }
 
         // If no active loans, redirect to Borrowing form
         return redirect()->route('peminjaman.create', ['barang_id' => $barang->id])
-                         ->with('success', 'Barang ditemukan: ' . $barang->nama);
+            ->with('success', 'Barang ditemukan: ' . $barang->nama);
     }
 }

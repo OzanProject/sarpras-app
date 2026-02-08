@@ -9,36 +9,69 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Sort by role (admin first), then by approval status, then by latest
-        $users = User::orderByRaw("FIELD(role, 'admin', 'user')")->orderBy('is_approved', 'asc')->latest()->get();
+        \Illuminate\Support\Facades\Gate::authorize('user.view');
+        // Sort by role_id (admin=1, user=2 usually), then by approval status, then by latest
+        $users = User::with('role')->orderBy('role_id')->orderBy('is_approved', 'asc')->latest()->get();
         return view('admin.user.index', compact('users'));
+    }
+
+    public function create()
+    {
+        \Illuminate\Support\Facades\Gate::authorize('user.create');
+        $roles = \App\Models\Role::all();
+        return view('admin.user.create', compact('roles'));
+    }
+
+    public function store(Request $request)
+    {
+        \Illuminate\Support\Facades\Gate::authorize('user.create');
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'role_id' => ['required', 'exists:roles,id'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'role_id' => $request->role_id,
+            'is_approved' => true, // Auto modify for admin created users
+            'email_verified_at' => now(),
+        ]);
+
+        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
+        \Illuminate\Support\Facades\Gate::authorize('user.edit');
         $user = User::findOrFail($id);
-        return view('admin.user.edit', compact('user'));
+        $roles = \App\Models\Role::all();
+        return view('admin.user.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)
     {
+        \Illuminate\Support\Facades\Gate::authorize('user.edit');
         $user = User::findOrFail($id);
-        
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
-            'role' => ['required', 'in:admin,user'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'role_id' => ['required', 'exists:roles,id'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->role = $request->role;
-        
+        $user->role_id = $request->role_id;
+
         // If approval status change is needed, we can add it here too. 
         // For now, let's assume editing doesn't automatically approve, or we can add a checkbox.
         // Let's stick to the request: Name, Role, Password.
-        
+
         if ($request->filled('password')) {
             $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
         }
@@ -50,6 +83,7 @@ class UserController extends Controller
 
     public function approve($id)
     {
+        \Illuminate\Support\Facades\Gate::authorize('user.edit');
         $user = User::findOrFail($id);
         $user->update(['is_approved' => true]);
 
@@ -58,8 +92,9 @@ class UserController extends Controller
 
     public function destroy($id)
     {
+        \Illuminate\Support\Facades\Gate::authorize('user.delete');
         $user = User::findOrFail($id);
-        
+
         if ($user->id == auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun sendiri.');
         }

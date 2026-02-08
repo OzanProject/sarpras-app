@@ -16,19 +16,19 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         // --- USER DASHBOARD ---
-        if ($user->role == 'user') {
+        if ($user->role->name == 'user') {
             $activeLoans = Peminjaman::where('user_id', $user->id)
-                            ->whereIn('status', ['pending', 'dipinjam'])
-                            ->with('barang')
-                            ->count();
-                            
+                ->whereIn('status', ['pending', 'dipinjam'])
+                ->with('barang')
+                ->count();
+
             $totalHistory = Peminjaman::where('user_id', $user->id)->count();
-            
+
             $currentLoans = Peminjaman::where('user_id', $user->id)
-                            ->where('status', 'dipinjam')
-                            ->with('barang')
-                            ->latest()
-                            ->get();
+                ->where('status', 'dipinjam')
+                ->with('barang')
+                ->latest()
+                ->get();
 
             // Generate Dynamic QR Content (List of Items)
             if ($currentLoans->count() > 0) {
@@ -58,13 +58,13 @@ class DashboardController extends Controller
 
         // 3. Chart Data: Loans per Month (Current Year)
         $loansPerMonth = Peminjaman::select(
-            DB::raw('MONTH(tgl_pinjam) as month'), 
+            DB::raw('MONTH(tgl_pinjam) as month'),
             DB::raw('count(*) as count')
         )
-        ->whereYear('tgl_pinjam', Carbon::now()->year)
-        ->groupBy('month')
-        ->orderBy('month')
-        ->pluck('count', 'month');
+            ->whereYear('tgl_pinjam', Carbon::now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month');
 
         // Prepare 12 months data (fill zeros if no data)
         $monthLabels = [];
@@ -75,10 +75,10 @@ class DashboardController extends Controller
         }
 
         return view('admin.dashboard', compact(
-            'totalBarang', 
-            'totalKategori', 
-            'dipinjam', 
-            'rusak', 
+            'totalBarang',
+            'totalKategori',
+            'dipinjam',
+            'rusak',
             'recentPeminjamans',
             'categoryLabels',
             'categoryData',

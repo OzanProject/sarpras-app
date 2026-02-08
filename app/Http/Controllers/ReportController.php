@@ -10,6 +10,7 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('report.view');
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
         $status = $request->input('status');
@@ -29,6 +30,7 @@ class ReportController extends Controller
 
     public function print(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('report.view');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $status = $request->input('status');
