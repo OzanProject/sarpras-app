@@ -33,6 +33,25 @@ Route::get('/debug-sarpas', function () {
     ]);
 });
 
+// Emergency Route to Create/Reset Admin (Run once then delete)
+Route::get('/fix-login-error', function () {
+    try {
+        $user = \App\Models\User::updateOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Administrator',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'admin',
+                'is_approved' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+        return "BERHASIL! User admin@admin.com sudah dibuat/direset.<br>Password: password<br><a href='/login'>Klik disini untuk Login</a>";
+    } catch (\Exception $e) {
+        return "GAGAL: " . $e->getMessage();
+    }
+});
+
 require __DIR__ . '/auth.php';
 
 Route::get('/', [\App\Http\Controllers\PublicController::class, 'index'])->name('home');
