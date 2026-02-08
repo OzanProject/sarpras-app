@@ -16,6 +16,9 @@ Route::get('/debug-sarpas', function () {
     session(['test_session' => 'Session Working']);
     $sessionVal = session('test_session');
 
+    $adminExists = \App\Models\User::where('email', 'admin@admin.com')->exists();
+    $userCount = \App\Models\User::count();
+
     return response()->json([
         'session_driver' => $driver,
         'storage_path' => $path,
@@ -23,6 +26,10 @@ Route::get('/debug-sarpas', function () {
         'session_test_value' => $sessionVal,
         'env_app_url' => env('APP_URL'),
         'https_status' => request()->secure(),
+        'database_check' => [
+            'admin_email_exists' => $adminExists,
+            'total_users' => $userCount,
+        ]
     ]);
 });
 
