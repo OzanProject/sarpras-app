@@ -36,16 +36,32 @@ Route::get('/debug-sarpas', function () {
 // Emergency Route to Create/Reset Admin (Run once then delete)
 Route::get('/fix-login-error', function () {
     try {
-        $user = \App\Models\User::updateOrCreate(
-            ['email' => 'admin@admin.com'],
-            [
-                'name' => 'Administrator',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                'role' => 'admin',
-                'is_approved' => true,
-                'email_verified_at' => now(),
-            ]
+        $role = \App\Models\Role::firstOrCreate(
+            ['name' => 'admin'],
+            ['description' => 'Administrator with full access']
         );
+        
+        $userData = [
+            'name' => 'Administrator',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'role_id' => $role?->id,
+            'is_approved' => true,
+            'email_verified_at' => now(),
+        ];
+
+        $user = \App\Models\User::where('email', 'admin@admin.com')->first();
+        if ($user) {
+            $user->update($userData);
+        } else {
+            $user = new \App\Models\User($userData);
+            $user->email = 'admin@admin.com';
+        }
+
+        if (\Schema::hasColumn('users', 'role')) {
+            $user->setAttribute('role', 'admin');
+        }
+        $user->save();
+
         return "BERHASIL! User admin@admin.com sudah dibuat/direset.<br>Password: password<br><a href='/login'>Klik disini untuk Login</a>";
     } catch (\Exception $e) {
         return "GAGAL: " . $e->getMessage();

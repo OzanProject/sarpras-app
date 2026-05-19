@@ -36,12 +36,23 @@ class RegisteredUserController extends Controller
             'role' => ['required', 'in:admin,user'],
         ]);
 
-        $user = User::create([
+        $role = \App\Models\Role::firstOrCreate(
+            ['name' => $request->role],
+            ['description' => ucfirst($request->role) . ' role']
+        );
+
+        $user = new User([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role_id' => $role?->id,
         ]);
+
+        if (\Schema::hasColumn('users', 'role')) {
+            $user->setAttribute('role', $request->role);
+        }
+
+        $user->save();
 
         event(new Registered($user));
 

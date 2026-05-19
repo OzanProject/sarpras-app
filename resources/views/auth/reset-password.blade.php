@@ -1,39 +1,253 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="en">
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+<head>
+    <meta charset="utf-8">
+    <title>Reset Password - {{ $global_settings['nama_sekolah'] ?? 'Sarana Prasarana' }}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- Favicon -->
+    <link href="{{ (isset($global_settings['logo']) && $global_settings['logo']) ? asset('storage/' . $global_settings['logo']) : asset('img/favicon.ico') }}" rel="icon">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{{ asset('darkpan/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{{ asset('darkpan/css/style.css') }}" rel="stylesheet">
+    
+    <!-- Override Stylesheet -->
+    <link href="{{ asset('darkpan/css/sarpras-override.css') }}" rel="stylesheet">
+
+    <!-- Inline Auth Styles (Bypasses Browser Caching) -->
+    <style>
+        .auth-bg {
+            background: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 45%), 
+                        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 45%), 
+                        #f8fafc !important;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(14, 165, 233, 0.12) !important;
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(14, 165, 233, 0.04) !important;
+            border-radius: 24px !important;
+            padding: 2.5rem !important;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+
+        .auth-card:hover {
+            box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(14, 165, 233, 0.06) !important;
+        }
+
+        .auth-logo-frame {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px solid #bae6fd;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(14, 165, 233, 0.08);
+            transition: all 0.3s ease;
+            margin: 0 auto;
+        }
+
+        .auth-title-text {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-input-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .auth-input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            z-index: 10;
+        }
+
+        .auth-field {
+            padding-left: 46px !important;
+            border-radius: 12px !important;
+            border: 1.5px solid #cbd5e1 !important;
+            height: auto !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+        }
+
+        .auth-field:focus {
+            border-color: #0ea5e9 !important;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12) !important;
+        }
+
+        .auth-field:focus + .auth-input-icon {
+            color: #0ea5e9;
+        }
+
+        .auth-toggle-pass {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .auth-btn-submit {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            padding: 12px 24px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15) !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .auth-btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.25) !important;
+            background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+
+<body class="auth-bg">
+    <div class="container-fluid position-relative d-flex p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>
+        <!-- Spinner End -->
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <!-- Reset Password Start -->
+        <div class="container-fluid">
+            <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+                    <div class="auth-card my-4 mx-3">
+                        <div class="auth-logo-container text-center mb-4">
+                            <div class="auth-logo-frame">
+                                @if(isset($global_settings['logo']) && $global_settings['logo'])
+                                    <img src="{{ asset('storage/' . $global_settings['logo']) }}" alt="Logo" style="width: 36px; height: 36px; object-fit: cover; border-radius: 8px;">
+                                @else
+                                    <i class="fa fa-school"></i>
+                                @endif
+                            </div>
+                            <h3 class="auth-title-text mt-3 mb-1">Password Baru</h3>
+                            <p class="text-muted mb-0" style="font-size: 0.85rem;">Masukkan kata sandi baru Anda</p>
+                        </div>
+
+                        <!-- Validation Errors -->
+                        @if ($errors->any())
+                            <div class="alert alert-danger mb-4" style="border-radius: 12px; font-size: 0.85rem;">
+                                <div class="fw-semibold mb-1"><i class="fa fa-exclamation-circle me-2"></i>Kesalahan:</div>
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form method="POST" action="{{ route('password.store') }}">
+                            @csrf
+
+                            <!-- Password Reset Token -->
+                            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+
+                            <div class="auth-input-group">
+                                <input type="email" class="form-control auth-field" id="email" name="email" placeholder="Alamat email" value="{{ old('email', $request->email) }}" required readonly autocomplete="username">
+                                <i class="fa fa-envelope auth-input-icon"></i>
+                            </div>
+                            
+                            <div class="auth-input-group">
+                                <input type="password" class="form-control auth-field" id="password" name="password" placeholder="Kata sandi baru" required autofocus autocomplete="new-password">
+                                <i class="fa fa-lock auth-input-icon"></i>
+                                <button type="button" class="auth-toggle-pass" id="btn-toggle-password" onclick="togglePasswordVisibility('password', 'toggle-icon-pass')">
+                                    <i class="fa fa-eye" id="toggle-icon-pass"></i>
+                                </button>
+                            </div>
+
+                            <div class="auth-input-group mb-4">
+                                <input type="password" class="form-control auth-field" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi kata sandi baru" required autocomplete="new-password">
+                                <i class="fa fa-lock auth-input-icon"></i>
+                                <button type="button" class="auth-toggle-pass" id="btn-toggle-confirm" onclick="togglePasswordVisibility('password_confirmation', 'toggle-icon-confirm')">
+                                    <i class="fa fa-eye" id="toggle-icon-confirm"></i>
+                                </button>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary auth-btn-submit py-3 mb-4">
+                                Perbarui Password <i class="fa fa-key ms-1"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+        <!-- Reset Password End -->
+    </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('darkpan/lib/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('darkpan/lib/waypoints/waypoints.min.js') }}"></script>
+    
+    <!-- Template Javascript -->
+    <script src="{{ asset('darkpan/js/main.js') }}"></script>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
+    <!-- Password Visibility Toggle Script -->
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>
