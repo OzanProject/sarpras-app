@@ -64,7 +64,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="5" class="text-center">Belum ada data role.</td>
+                    <td colspan="6" class="text-center">Belum ada data role.</td>
                   </tr>
                 @endforelse
               </tbody>

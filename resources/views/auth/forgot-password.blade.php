@@ -23,12 +23,15 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('darkpan/css/style.css') }}" rel="stylesheet">
+    
+    <!-- Override Stylesheet -->
+    <link href="{{ asset('darkpan/css/sarpras-override.css') }}" rel="stylesheet">
 </head>
 
 <body>
     <div class="container-fluid position-relative d-flex p-0">
         <!-- Spinner Start -->
-        <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
@@ -52,7 +55,7 @@
                             <h3>Reset Password</h3>
                         </div>
                         
-                        <div class="mb-4 text-white">
+                        <div class="mb-4 text-muted" style="font-size: 0.85rem;">
                             {{ __('Lupa password Anda? Tidak masalah. Beri tahu kami alamat email Anda dan kami akan mengirimkan tautan pengaturan ulang password.') }}
                         </div>
 

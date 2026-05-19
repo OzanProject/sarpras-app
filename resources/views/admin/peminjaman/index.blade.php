@@ -40,6 +40,7 @@
                             <td>{{ $pinjam->nama_peminjam }}</td>
                             <td>{{ $pinjam->barang->nama }}</td>
                             <td>{{ $pinjam->jumlah }}</td>
+                            <td>
                                 @if($pinjam->status == 'pending')
                                     <span class="badge bg-warning text-dark">Menunggu</span>
                                 @elseif($pinjam->status == 'dipinjam')
