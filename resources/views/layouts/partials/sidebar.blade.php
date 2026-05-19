@@ -25,6 +25,7 @@
         </a>
 
         {{-- ===== User Info ===== --}}
+        @auth
         <div class="d-flex align-items-center ms-3 mb-4 p-3"
              style="background:rgba(255,255,255,.06); border-radius:14px; border:1px solid rgba(255,255,255,.1);">
             <div class="position-relative">
@@ -38,10 +39,11 @@
                 <div style="font-weight:700; font-size:.875rem; color:#fff;">{{ Auth::user()->name }}</div>
                 <div style="font-size:.72rem; color:#7dd3fc; font-weight:500;">
                     <i class="fa fa-circle" style="font-size:.4rem; vertical-align:middle;"></i>
-                    {{ ucfirst(Auth::user()->role->name ?? 'User') }}
+                    {{ ucfirst(Auth::user()->role?->name ?? 'User') }}
                 </div>
             </div>
         </div>
+        @endauth
 
         {{-- ===== Nav Section Label ===== --}}
         <div style="font-size:.65rem; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:1px; padding:0 20px 8px;">
@@ -55,111 +57,114 @@
                 <i class="fa fa-tachometer-alt me-2"></i>Dashboard
             </a>
 
-            @if(Auth::user()->role->name == 'admin' || Auth::user()->role->permissions->count() > 0)
+            @auth
+                @if(Auth::user()->role && (Auth::user()->role->name == 'admin' || (Auth::user()->role->permissions && Auth::user()->role->permissions->count() > 0)))
 
-                @if(Gate::check('kategori.view') || Gate::check('barang.view') || Gate::check('room.view'))
-                    <div class="nav-item dropdown">
-                        <a href="#"
-                           class="nav-link dropdown-toggle {{ request()->routeIs('kategori.*') || request()->routeIs('barang.*') || request()->routeIs('room.*') ? 'active' : '' }}"
-                           data-bs-toggle="dropdown">
-                            <i class="fa fa-boxes me-2"></i>Data Master
-                        </a>
-                        <div class="dropdown-menu bg-transparent border-0 {{ request()->routeIs('kategori.*') || request()->routeIs('barang.*') || request()->routeIs('room.*') ? 'show' : '' }}">
-                            @can('kategori.view')
-                                <a href="{{ route('kategori.index') }}"
-                                   class="dropdown-item {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
-                                   <i class="fa fa-tag me-2" style="font-size:.75rem;"></i>Kategori
-                                </a>
-                            @endcan
-                            @can('room.view')
-                                <a href="{{ route('room.index') }}"
-                                   class="dropdown-item {{ request()->routeIs('room.*') ? 'active' : '' }}">
-                                   <i class="fa fa-door-open me-2" style="font-size:.75rem;"></i>Ruangan
-                                </a>
-                            @endcan
-                            @can('barang.view')
-                                <a href="{{ route('barang.index') }}"
-                                   class="dropdown-item {{ request()->routeIs('barang.*') ? 'active' : '' }}">
-                                   <i class="fa fa-box me-2" style="font-size:.75rem;"></i>Data Barang
-                                </a>
-                            @endcan
+                    @if(Gate::check('kategori.view') || Gate::check('barang.view') || Gate::check('room.view'))
+                        <div class="nav-item dropdown">
+                            <a href="#"
+                               class="nav-link dropdown-toggle {{ request()->routeIs('kategori.*') || request()->routeIs('barang.*') || request()->routeIs('room.*') ? 'active' : '' }}"
+                               data-bs-toggle="dropdown">
+                                <i class="fa fa-boxes me-2"></i>Data Master
+                            </a>
+                            <div class="dropdown-menu bg-transparent border-0 {{ request()->routeIs('kategori.*') || request()->routeIs('barang.*') || request()->routeIs('room.*') ? 'show' : '' }}">
+                                @can('kategori.view')
+                                    <a href="{{ route('kategori.index') }}"
+                                       class="dropdown-item {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
+                                       <i class="fa fa-tag me-2" style="font-size:.75rem;"></i>Kategori
+                                    </a>
+                                @endcan
+                                @can('room.view')
+                                    <a href="{{ route('room.index') }}"
+                                       class="dropdown-item {{ request()->routeIs('room.*') ? 'active' : '' }}">
+                                       <i class="fa fa-door-open me-2" style="font-size:.75rem;"></i>Ruangan
+                                    </a>
+                                @endcan
+                                @can('barang.view')
+                                    <a href="{{ route('barang.index') }}"
+                                       class="dropdown-item {{ request()->routeIs('barang.*') ? 'active' : '' }}">
+                                       <i class="fa fa-box me-2" style="font-size:.75rem;"></i>Data Barang
+                                    </a>
+                                @endcan
+                            </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
 
-                @can('peminjaman.view')
-                    <a href="{{ route('peminjaman.index') }}"
-                       class="nav-item nav-link {{ request()->routeIs('peminjaman.*') ? 'active' : '' }}">
-                        <i class="fa fa-handshake me-2"></i>Peminjaman
-                    </a>
-                @endcan
-
-                @can('scan.view')
-                    <a href="{{ route('scan.index') }}"
-                       class="nav-item nav-link {{ request()->routeIs('scan.*') ? 'active' : '' }}">
-                        <i class="fa fa-qrcode me-2"></i>Scan QR
-                    </a>
-                @endcan
-
-                @can('maintenance.view')
-                    <a href="{{ route('maintenance.index') }}"
-                       class="nav-item nav-link {{ request()->routeIs('maintenance.*') ? 'active' : '' }}">
-                        <i class="fa fa-tools me-2"></i>Perbaikan
-                    </a>
-                @endcan
-
-                @can('report.view')
-                    <a href="{{ route('report.index') }}"
-                       class="nav-item nav-link {{ request()->routeIs('report.*') ? 'active' : '' }}">
-                        <i class="fa fa-file-alt me-2"></i>Laporan
-                    </a>
-                @endcan
-
-                @if(Gate::check('setting.view') || Gate::check('user.view') || Gate::check('role.view'))
-                    {{-- Section label --}}
-                    <div style="font-size:.65rem; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:1px; padding:12px 20px 8px; margin-top:4px;">
-                        Pengaturan
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#"
-                           class="nav-link dropdown-toggle {{ request()->routeIs('setting.*') || request()->routeIs('user.*') || request()->routeIs('role.*') ? 'active' : '' }}"
-                           data-bs-toggle="dropdown">
-                            <i class="fa fa-cogs me-2"></i>Pengaturan
+                    @can('peminjaman.view')
+                        <a href="{{ route('peminjaman.index') }}"
+                           class="nav-item nav-link {{ request()->routeIs('peminjaman.*') ? 'active' : '' }}">
+                            <i class="fa fa-handshake me-2"></i>Peminjaman
                         </a>
-                        <div class="dropdown-menu bg-transparent border-0 {{ request()->routeIs('setting.*') || request()->routeIs('user.*') || request()->routeIs('role.*') ? 'show' : '' }}">
-                            @can('setting.view')
-                                <a href="{{ route('setting.index') }}"
-                                   class="dropdown-item {{ request()->routeIs('setting.index') ? 'active' : '' }}">
-                                   <i class="fa fa-sliders-h me-2" style="font-size:.75rem;"></i>Umum
-                                </a>
-                            @endcan
-                            @can('role.view')
-                                <a href="{{ route('role.index') }}"
-                                   class="dropdown-item {{ request()->routeIs('role.*') ? 'active' : '' }}">
-                                   <i class="fa fa-shield-alt me-2" style="font-size:.75rem;"></i>Hak Akses
-                                </a>
-                            @endcan
-                            @can('user.view')
-                                <a href="{{ route('user.index') }}"
-                                   class="dropdown-item {{ request()->routeIs('user.*') ? 'active' : '' }}">
-                                   <i class="fa fa-users me-2" style="font-size:.75rem;"></i>Data Pengguna
-                                </a>
-                            @endcan
-                        </div>
-                    </div>
-                @endif
+                    @endcan
 
-            @else
-                {{-- User Menu --}}
-                <a href="{{ route('user.peminjaman.index') }}"
-                   class="nav-item nav-link {{ request()->routeIs('user.peminjaman.*') ? 'active' : '' }}">
-                    <i class="fa fa-history me-2"></i>Riwayat Peminjaman
-                </a>
-            @endif
+                    @can('scan.view')
+                        <a href="{{ route('scan.index') }}"
+                           class="nav-item nav-link {{ request()->routeIs('scan.*') ? 'active' : '' }}">
+                            <i class="fa fa-qrcode me-2"></i>Scan QR
+                        </a>
+                    @endcan
+
+                    @can('maintenance.view')
+                        <a href="{{ route('maintenance.index') }}"
+                           class="nav-item nav-link {{ request()->routeIs('maintenance.*') ? 'active' : '' }}">
+                            <i class="fa fa-tools me-2"></i>Perbaikan
+                        </a>
+                    @endcan
+
+                    @can('report.view')
+                        <a href="{{ route('report.index') }}"
+                           class="nav-item nav-link {{ request()->routeIs('report.*') ? 'active' : '' }}">
+                            <i class="fa fa-file-alt me-2"></i>Laporan
+                        </a>
+                    @endcan
+
+                    @if(Gate::check('setting.view') || Gate::check('user.view') || Gate::check('role.view'))
+                        {{-- Section label --}}
+                        <div style="font-size:.65rem; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:1px; padding:12px 20px 8px; margin-top:4px;">
+                            Pengaturan
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#"
+                               class="nav-link dropdown-toggle {{ request()->routeIs('setting.*') || request()->routeIs('user.*') || request()->routeIs('role.*') ? 'active' : '' }}"
+                               data-bs-toggle="dropdown">
+                                <i class="fa fa-cogs me-2"></i>Pengaturan
+                            </a>
+                            <div class="dropdown-menu bg-transparent border-0 {{ request()->routeIs('setting.*') || request()->routeIs('user.*') || request()->routeIs('role.*') ? 'show' : '' }}">
+                                @can('setting.view')
+                                    <a href="{{ route('setting.index') }}"
+                                       class="dropdown-item {{ request()->routeIs('setting.index') ? 'active' : '' }}">
+                                       <i class="fa fa-sliders-h me-2" style="font-size:.75rem;"></i>Umum
+                                    </a>
+                                @endcan
+                                @can('role.view')
+                                    <a href="{{ route('role.index') }}"
+                                       class="dropdown-item {{ request()->routeIs('role.*') ? 'active' : '' }}">
+                                       <i class="fa fa-shield-alt me-2" style="font-size:.75rem;"></i>Hak Akses
+                                    </a>
+                                @endcan
+                                @can('user.view')
+                                    <a href="{{ route('user.index') }}"
+                                       class="dropdown-item {{ request()->routeIs('user.*') ? 'active' : '' }}">
+                                       <i class="fa fa-users me-2" style="font-size:.75rem;"></i>Data Pengguna
+                                    </a>
+                                @endcan
+                            </div>
+                        </div>
+                    @endif
+
+                @else
+                    {{-- User Menu --}}
+                    <a href="{{ route('user.peminjaman.index') }}"
+                       class="nav-item nav-link {{ request()->routeIs('user.peminjaman.*') ? 'active' : '' }}">
+                        <i class="fa fa-history me-2"></i>Riwayat Peminjaman
+                    </a>
+                @endif
+            @endauth
 
         </div>
 
         {{-- ===== Logout at bottom ===== --}}
+        @auth
         <div class="mt-4 mx-3 w-100" style="padding-right:28px;">
             <div style="border-top:1px solid rgba(255,255,255,.08); padding-top:16px;">
                 <form method="POST" action="{{ route('logout') }}">
@@ -173,6 +178,7 @@
                 </form>
             </div>
         </div>
+        @endauth
 
     </nav>
 </div>

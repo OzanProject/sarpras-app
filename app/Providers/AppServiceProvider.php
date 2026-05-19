@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
                     $permissions = \App\Models\Permission::all();
                     foreach ($permissions as $permission) {
                         \Illuminate\Support\Facades\Gate::define($permission->name, function ($user) use ($permission) {
-                            return $user->role->permissions->contains('name', $permission->name);
+                            return $user->role?->permissions->contains('name', $permission->name) ?? false;
                         });
                     }
                 } catch (\Exception $e) {

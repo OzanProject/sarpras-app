@@ -54,4 +54,28 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function getRoleAttribute($value)
+    {
+        if ($this->relationLoaded('role')) {
+            return $this->getRelation('role');
+        }
+
+        if (!empty($this->role_id)) {
+            $roleObj = $this->role()->getResults();
+            if ($roleObj) {
+                return $roleObj;
+            }
+        }
+
+        if (is_string($value) && !empty($value)) {
+            $roleObj = Role::where('name', $value)->first();
+            if ($roleObj) {
+                $this->setRelation('role', $roleObj);
+                return $roleObj;
+            }
+        }
+
+        return null;
+    }
 }

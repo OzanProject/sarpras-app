@@ -13,6 +13,7 @@
         <input class="form-control" type="search" placeholder="Cari data..." style="background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 20px; min-width: 220px;">
     </form>
     <div class="navbar-nav align-items-center ms-auto">
+        @auth
         <div class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                 <img class="rounded-circle me-lg-2" src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('darkpan/img/user.jpg') }}" alt="" style="width: 40px; height: 40px; border: 2px solid #bae6fd;">
@@ -27,5 +28,8 @@
                 </form>
             </div>
         </div>
+        @else
+        <a href="{{ route('login') }}" class="btn btn-sm btn-primary rounded-pill px-3">Log In</a>
+        @endauth
     </div>
 </nav>

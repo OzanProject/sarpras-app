@@ -52,14 +52,18 @@
 
 
         <!-- Sidebar Start -->
-        @include('layouts.partials.sidebar')
+        @auth
+            @include('layouts.partials.sidebar')
+        @endauth
         <!-- Sidebar End -->
 
 
         <!-- Content Start -->
-        <div class="content d-flex flex-column min-vh-100">
+        <div class="content {{ !Auth::check() ? 'w-100 ms-0' : '' }} d-flex flex-column min-vh-100">
             <!-- Navbar Start -->
-            @include('layouts.partials.navbar')
+            @auth
+                @include('layouts.partials.navbar')
+            @endauth
             <!-- Navbar End -->
 
 
