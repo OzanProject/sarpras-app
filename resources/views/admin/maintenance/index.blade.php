@@ -26,6 +26,7 @@
                             <th scope="col">Tanggal</th>
                             <th scope="col">Barang</th>
                             <th scope="col">Kerusakan</th>
+                            <th scope="col">Foto Bukti</th>
                             <th scope="col">Biaya</th>
                             <th scope="col">Status</th>
                             <th scope="col">Aksi</th>
@@ -38,6 +39,15 @@
                             <td>{{ $maintenance->tgl_lapor->format('d M Y') }}</td>
                             <td>{{ $maintenance->barang->nama }} ({{ $maintenance->barang->kode_barang }})</td>
                             <td>{{ Str::limit($maintenance->deskripsi_kerusakan, 30) }}</td>
+                            <td>
+                                @if($maintenance->foto_bukti)
+                                    <a href="{{ asset('storage/' . $maintenance->foto_bukti) }}" target="_blank">
+                                        <img src="{{ asset('storage/' . $maintenance->foto_bukti) }}" alt="Bukti" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                    </a>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td>Rp {{ number_format($maintenance->biaya ?? 0, 0, ',', '.') }}</td>
                             <td>
                                 @if($maintenance->status == 'pending')
@@ -59,7 +69,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Belum ada data perbaikan.</td>
+                            <td colspan="8" class="text-center text-muted">Belum ada data perbaikan.</td>
                         </tr>
                         @endforelse
                     </tbody>

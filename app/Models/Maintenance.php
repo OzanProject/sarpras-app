@@ -14,6 +14,7 @@ class Maintenance extends Model
         'barang_id',
         'tgl_lapor',
         'deskripsi_kerusakan',
+        'foto_bukti',
         'biaya',
         'tgl_selesai',
         'status',

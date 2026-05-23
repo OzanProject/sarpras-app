@@ -15,6 +15,8 @@ class ReportController extends Controller
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
         $status = $request->input('status');
 
+        $type = $request->input('type', 'peminjaman');
+
         $query = Peminjaman::with('barang')
             ->whereDate('tgl_pinjam', '>=', $startDate)
             ->whereDate('tgl_pinjam', '<=', $endDate);
@@ -25,7 +27,19 @@ class ReportController extends Controller
 
         $peminjamans = $query->latest()->get();
 
-        return view('admin.report.index', compact('peminjamans', 'startDate', 'endDate', 'status'));
+        $barangs = null;
+        if ($type == 'aset') {
+            $barangQuery = \App\Models\Barang::with(['kategori', 'room', 'maintenances' => function($q) {
+                $q->latest()->whereNotNull('foto_bukti');
+            }])->latest();
+            // If they want to filter aset by status (kondisi), we can use the same $status variable
+            if ($status) {
+                $barangQuery->where('kondisi', $status);
+            }
+            $barangs = $barangQuery->get();
+        }
+
+        return view('admin.report.index', compact('peminjamans', 'barangs', 'startDate', 'endDate', 'status', 'type'));
     }
 
     public function print(Request $request)
@@ -35,6 +49,8 @@ class ReportController extends Controller
         $endDate = $request->input('end_date');
         $status = $request->input('status');
 
+        $type = $request->input('type', 'peminjaman');
+
         $query = Peminjaman::with('barang')
             ->whereDate('tgl_pinjam', '>=', $startDate)
             ->whereDate('tgl_pinjam', '<=', $endDate);
@@ -45,6 +61,17 @@ class ReportController extends Controller
 
         $peminjamans = $query->latest()->get();
 
-        return view('admin.report.print', compact('peminjamans', 'startDate', 'endDate', 'status'));
+        $barangs = null;
+        if ($type == 'aset') {
+            $barangQuery = \App\Models\Barang::with(['kategori', 'room', 'maintenances' => function($q) {
+                $q->latest()->whereNotNull('foto_bukti');
+            }])->latest();
+            if ($status) {
+                $barangQuery->where('kondisi', $status);
+            }
+            $barangs = $barangQuery->get();
+        }
+
+        return view('admin.report.print', compact('peminjamans', 'barangs', 'startDate', 'endDate', 'status', 'type'));
     }
 }

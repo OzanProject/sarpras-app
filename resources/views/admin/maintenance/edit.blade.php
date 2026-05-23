@@ -12,7 +12,7 @@
     <div class="col-sm-12 col-xl-12">
         <div class="bg-secondary rounded h-100 p-4">
             <h6 class="mb-4">Update Data Perbaikan</h6>
-            <form action="{{ route('maintenance.update', $maintenance->id) }}" method="POST">
+            <form action="{{ route('maintenance.update', $maintenance->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
@@ -35,6 +35,19 @@
                     <label for="deskripsi_kerusakan" class="col-sm-2 col-form-label">Deskripsi Kerusakan</label>
                     <div class="col-sm-10">
                         <textarea class="form-control" id="deskripsi_kerusakan" name="deskripsi_kerusakan" rows="4" required>{{ $maintenance->deskripsi_kerusakan }}</textarea>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="foto_bukti" class="col-sm-2 col-form-label">Foto Bukti</label>
+                    <div class="col-sm-10">
+                        @if($maintenance->foto_bukti)
+                            <div class="mb-2">
+                                <img src="{{ asset('storage/' . $maintenance->foto_bukti) }}" alt="Foto Bukti" class="img-thumbnail" style="max-height: 150px;">
+                            </div>
+                        @endif
+                        <input class="form-control bg-dark" type="file" id="foto_bukti" name="foto_bukti" accept="image/*">
+                        <div class="form-text text-muted">Opsional. Biarkan kosong jika tidak ingin mengubah foto.</div>
                     </div>
                 </div>
 

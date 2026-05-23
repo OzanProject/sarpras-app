@@ -7,7 +7,7 @@
     <div class="col-sm-12 col-xl-12">
         <div class="bg-secondary rounded h-100 p-4">
             <h6 class="mb-4">Form Lapor Kerusakan Barang</h6>
-            <form action="{{ route('maintenance.store') }}" method="POST">
+            <form action="{{ route('maintenance.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
                 <div class="row mb-3">
@@ -37,6 +37,14 @@
                     <div class="col-sm-10">
                         <textarea class="form-control" id="deskripsi_kerusakan" name="deskripsi_kerusakan" rows="4" required>{{ old('deskripsi_kerusakan') }}</textarea>
                         <div class="form-text text-muted">Jelaskan detail kerusakan yang terjadi.</div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="foto_bukti" class="col-sm-2 col-form-label">Foto Bukti</label>
+                    <div class="col-sm-10">
+                        <input class="form-control bg-dark" type="file" id="foto_bukti" name="foto_bukti" accept="image/*">
+                        <div class="form-text text-muted">Opsional. Unggah foto barang yang rusak (Maks. 2MB).</div>
                     </div>
                 </div>
 

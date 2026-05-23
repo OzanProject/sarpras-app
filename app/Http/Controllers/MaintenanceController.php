@@ -29,10 +29,17 @@ class MaintenanceController extends Controller
             'barang_id' => 'required|exists:barangs,id',
             'tgl_lapor' => 'required|date',
             'deskripsi_kerusakan' => 'required|string',
+            'foto_bukti' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:pending,proses,selesai',
         ]);
 
-        $maintenance = Maintenance::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('foto_bukti')) {
+            $data['foto_bukti'] = $request->file('foto_bukti')->store('maintenances', 'public');
+        }
+
+        $maintenance = Maintenance::create($data);
 
         if ($maintenance->status != 'selesai') {
             $barang = Barang::find($request->barang_id);
@@ -56,12 +63,23 @@ class MaintenanceController extends Controller
             'barang_id' => 'required|exists:barangs,id',
             'tgl_lapor' => 'required|date',
             'deskripsi_kerusakan' => 'required|string',
+            'foto_bukti' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'biaya' => 'nullable|numeric|min:0',
             'tgl_selesai' => 'nullable|date',
             'status' => 'required|in:pending,proses,selesai',
         ]);
 
-        $maintenance->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('foto_bukti')) {
+            // Delete old photo if exists
+            if ($maintenance->foto_bukti && \Illuminate\Support\Facades\Storage::disk('public')->exists($maintenance->foto_bukti)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($maintenance->foto_bukti);
+            }
+            $data['foto_bukti'] = $request->file('foto_bukti')->store('maintenances', 'public');
+        }
+
+        $maintenance->update($data);
 
         if ($request->status == 'selesai') {
             $barang = Barang::find($request->barang_id);
