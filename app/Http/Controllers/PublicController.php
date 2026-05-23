@@ -22,4 +22,10 @@ class PublicController extends Controller
 
         return view('welcome', compact('barangs', 'search'));
     }
+
+    public function scanBarcode($kode_barang)
+    {
+        $barang = Barang::with(['kategori', 'room'])->where('kode_barang', $kode_barang)->firstOrFail();
+        return view('public.scan-barcode', compact('barang'));
+    }
 }

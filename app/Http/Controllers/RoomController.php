@@ -35,6 +35,7 @@ class RoomController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255|unique:rooms,nama',
             'keterangan' => 'nullable|string',
+            'pj_ruangan' => 'nullable|string|max:255',
         ]);
 
         Room::create($request->all());
@@ -60,6 +61,7 @@ class RoomController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255|unique:rooms,nama,' . $room->id,
             'keterangan' => 'nullable|string',
+            'pj_ruangan' => 'nullable|string|max:255',
         ]);
 
         $room->update($request->all());

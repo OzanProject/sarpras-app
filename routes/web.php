@@ -71,6 +71,7 @@ Route::get('/fix-login-error', function () {
 require __DIR__ . '/auth.php';
 
 Route::get('/', [\App\Http\Controllers\PublicController::class, 'index'])->name('home');
+Route::get('/scan-barcode/{kode_barang}', [\App\Http\Controllers\PublicController::class, 'scanBarcode'])->name('public.scan-barcode');
 
 Route::middleware('auth')->group(function () {
     Route::get('/verify-email', EmailVerificationPromptController::class)

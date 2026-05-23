@@ -127,7 +127,7 @@
             <div class="card-border-decoration"></div>
             <div class="qr-box">
                 <!-- Using fixed size for print stability -->
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $barang->kode_barang }}" alt="QR">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(route('public.scan-barcode', $barang->kode_barang)) }}" alt="QR">
             </div>
             <div class="info-box">
                 <div class="school-name">Sarana Prasarana Sekolah</div>

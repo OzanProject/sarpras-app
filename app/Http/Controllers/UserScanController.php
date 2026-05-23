@@ -22,6 +22,13 @@ class UserScanController extends Controller
 
         $kode_barang = trim($request->kode_barang);
 
+        // If the scanned input is a URL (e.g. from the new public QR code format)
+        if (filter_var($kode_barang, FILTER_VALIDATE_URL)) {
+            $path = parse_url($kode_barang, PHP_URL_PATH);
+            $segments = explode('/', trim($path, '/'));
+            $kode_barang = end($segments);
+        }
+
         // Smart Check: Are they scanning a Member Card Summary?
         if (str_starts_with($kode_barang, 'Status Peminjaman') || str_starts_with($kode_barang, 'Member Valid')) {
             return redirect()->route('user.peminjaman.index')->with('success', 'Kartu Anggota terbaca! Berikut adalah daftar peminjaman Anda.');

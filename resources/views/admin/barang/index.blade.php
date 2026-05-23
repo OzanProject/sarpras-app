@@ -27,6 +27,41 @@
                 <div id="bulk-inputs"></div>
             </form>
 
+            @php
+                $totalBaik = $barangs->where('kondisi', 'baik')->count();
+                $totalRusak = $barangs->where('kondisi', 'rusak')->count();
+                $totalPerbaikan = $barangs->where('kondisi', 'perbaikan')->count();
+            @endphp
+            <div class="row mb-4">
+                <div class="col-sm-4">
+                    <div class="bg-dark rounded d-flex align-items-center justify-content-between p-3 border-start border-success border-4">
+                        <div class="ms-3">
+                            <p class="mb-2 text-white">Total Aset Baik</p>
+                            <h6 class="mb-0 text-success">{{ $totalBaik }} Unit</h6>
+                        </div>
+                        <i class="fa fa-check-circle fa-2x text-success"></i>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="bg-dark rounded d-flex align-items-center justify-content-between p-3 border-start border-danger border-4">
+                        <div class="ms-3">
+                            <p class="mb-2 text-white">Total Aset Rusak</p>
+                            <h6 class="mb-0 text-danger">{{ $totalRusak }} Unit</h6>
+                        </div>
+                        <i class="fa fa-times-circle fa-2x text-danger"></i>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="bg-dark rounded d-flex align-items-center justify-content-between p-3 border-start border-warning border-4">
+                        <div class="ms-3">
+                            <p class="mb-2 text-white">Dalam Perbaikan</p>
+                            <h6 class="mb-0 text-warning">{{ $totalPerbaikan }} Unit</h6>
+                        </div>
+                        <i class="fa fa-wrench fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -41,6 +76,7 @@
                             <th scope="col">Stok</th>
                             <th scope="col">Kondisi</th>
                             <th scope="col">Lokasi</th>
+                            <th scope="col">PJ Lokasi</th>
                             <th scope="col">Aksi</th>
                         </tr>
                     </thead>
@@ -61,6 +97,7 @@
                                 </span>
                             </td>
                             <td>{{ $barang->room->nama ?? '-' }}</td>
+                            <td>{{ $barang->room->pj_ruangan ?? '-' }}</td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <a href="{{ route('barang.show', $barang->id) }}" class="btn btn-sm btn-info" title="Detail & QR"><i class="fa fa-eye"></i></a>

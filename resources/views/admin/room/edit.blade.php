@@ -16,6 +16,11 @@
                     @error('nama') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
                 <div class="mb-3">
+                    <label for="pj_ruangan" class="form-label">Nama PJ Ruangan</label>
+                    <input type="text" class="form-control" id="pj_ruangan" name="pj_ruangan" value="{{ old('pj_ruangan', $room->pj_ruangan) }}" placeholder="Contoh: Bpk. Budi">
+                    @error('pj_ruangan') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="mb-3">
                     <label for="keterangan" class="form-label">Keterangan</label>
                     <textarea class="form-control" id="keterangan" name="keterangan" rows="3">{{ old('keterangan', $room->keterangan) }}</textarea>
                 </div>

@@ -31,6 +31,7 @@
                         <tr class="text-white">
                             <th scope="col">No</th>
                             <th scope="col">Nama Ruangan</th>
+                            <th scope="col">PJ Ruangan</th>
                             <th scope="col">Keterangan</th>
                             <th scope="col">Jumlah Barang</th>
                             <th scope="col">Aksi</th>
@@ -41,6 +42,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $room->nama }}</td>
+                            <td>{{ $room->pj_ruangan ?? '-' }}</td>
                             <td>{{ $room->keterangan ?? '-' }}</td>
                             <td>{{ $room->barangs->count() }} Item</td>
                             <td>

@@ -15,11 +15,16 @@ class ScanController extends Controller
 
     public function process(Request $request)
     {
-        $request->validate([
-            'kode_barang' => 'required|string|exists:barangs,kode_barang',
-        ]);
+        $kode = $request->kode_barang;
+        
+        // If the scanned input is a URL (e.g. from the new public QR code format)
+        if (filter_var($kode, FILTER_VALIDATE_URL)) {
+            $path = parse_url($kode, PHP_URL_PATH);
+            $segments = explode('/', trim($path, '/'));
+            $kode = end($segments); // get the last part which should be kode_barang
+        }
 
-        $barang = Barang::where('kode_barang', $request->kode_barang)->firstOrFail();
+        $barang = Barang::where('kode_barang', $kode)->firstOrFail();
 
         // Check for active loans (Items that are currently borrowed)
         $activeLoans = \App\Models\Peminjaman::where('barang_id', $barang->id)

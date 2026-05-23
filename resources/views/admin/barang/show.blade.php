@@ -25,7 +25,7 @@
                         <div class="card-body text-center">
                             <h6 class="text-white mb-2">QR Code</h6>
                             <!-- Public QR Code API for simplicity -->
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $barang->kode_barang }}" alt="QR Code" class="img-fluid bg-white p-2 rounded">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(route('public.scan-barcode', $barang->kode_barang)) }}" alt="QR Code" class="img-fluid bg-white p-2 rounded">
                             <div class="mt-2">
                                 <small class="text-muted">{{ $barang->kode_barang }}</small>
                             </div>
@@ -70,6 +70,10 @@
                             <tr>
                                 <th>Lokasi / Ruangan</th>
                                 <td>{{ $barang->room->nama ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nama PJ Ruangan</th>
+                                <td>{{ $barang->room->pj_ruangan ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Terakhir Update</th>
