@@ -22,7 +22,7 @@
                     <select class="form-select" id="barang_id" name="barang_id" required>
                         <option value="">-- Pilih Barang --</option>
                         @foreach($barangs as $barang)
-                            <option value="{{ $barang->id }}" data-stok="{{ $barang->stok }}">
+                            <option value="{{ $barang->id }}" data-stok="{{ $barang->stok }}" {{ request('barang_id') == $barang->id ? 'selected' : '' }}>
                                 {{ $barang->kode_barang }} - {{ $barang->nama }} (Stok: {{ $barang->stok }})
                             </option>
                         @endforeach
@@ -30,8 +30,19 @@
                 </div>
                 
                 <div class="mb-3">
-                    <label for="nama_peminjam" class="form-label">Nama Peminjam</label>
-                    <input type="text" class="form-control" id="nama_peminjam" name="nama_peminjam" placeholder="Nama Siswa/Guru" required>
+                    <label for="user_id" class="form-label">Pilih User (Anggota) - Opsional</label>
+                    <select class="form-select" id="user_id" name="user_id" onchange="toggleNamaPeminjam()">
+                        <option value="">-- Pinjam Manual (Bukan Anggota) --</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">Pilih user agar barang muncul di dashboard user tersebut.</small>
+                </div>
+
+                <div class="mb-3" id="nama_peminjam_container">
+                    <label for="nama_peminjam" class="form-label">Nama Peminjam (Jika Bukan Anggota)</label>
+                    <input type="text" class="form-control" id="nama_peminjam" name="nama_peminjam" placeholder="Nama Peminjam (Bila tanpa akun)">
                 </div>
 
                 <div class="row">
@@ -56,4 +67,24 @@
         </div>
     </div>
 </div>
+
+<script>
+    function toggleNamaPeminjam() {
+        const userId = document.getElementById('user_id').value;
+        const namaContainer = document.getElementById('nama_peminjam_container');
+        const namaInput = document.getElementById('nama_peminjam');
+        
+        if (userId) {
+            namaContainer.style.display = 'none';
+            namaInput.removeAttribute('required');
+            namaInput.value = ''; // clear when hidden
+        } else {
+            namaContainer.style.display = 'block';
+            namaInput.setAttribute('required', 'required');
+        }
+    }
+
+    // Run on initial load to set correct state
+    document.addEventListener('DOMContentLoaded', toggleNamaPeminjam);
+</script>
 @endsection
