@@ -21,7 +21,8 @@ class PeminjamanController extends Controller
         \Illuminate\Support\Facades\Gate::authorize('peminjaman.action');
         // Only show items with stock > 0
         $barangs = Barang::where('stok', '>', 0)->get();
-        return view('admin.peminjaman.create', compact('barangs'));
+        $users = \App\Models\User::all();
+        return view('admin.peminjaman.create', compact('barangs', 'users'));
     }
 
     public function store(Request $request)
@@ -29,7 +30,8 @@ class PeminjamanController extends Controller
         \Illuminate\Support\Facades\Gate::authorize('peminjaman.action');
         $request->validate([
             'barang_id' => 'required|exists:barangs,id',
-            'nama_peminjam' => 'required|string|max:255',
+            'user_id' => 'nullable|exists:users,id',
+            'nama_peminjam' => 'required_without:user_id|string|max:255|nullable',
             'tgl_pinjam' => 'required|date',
             'jumlah' => 'required|integer|min:1',
             'keterangan' => 'nullable|string',
@@ -41,11 +43,18 @@ class PeminjamanController extends Controller
             return back()->with('error', 'Stok barang tidak mencukupi!');
         }
 
-        DB::transaction(function () use ($request, $barang) {
+        $nama_peminjam = $request->nama_peminjam;
+        if ($request->user_id) {
+            $user = \App\Models\User::find($request->user_id);
+            $nama_peminjam = $user->name;
+        }
+
+        DB::transaction(function () use ($request, $barang, $nama_peminjam) {
             // Create Peminjaman
             Peminjaman::create([
                 'barang_id' => $request->barang_id,
-                'nama_peminjam' => $request->nama_peminjam,
+                'user_id' => $request->user_id,
+                'nama_peminjam' => $nama_peminjam,
                 'tgl_pinjam' => $request->tgl_pinjam,
                 'jumlah' => $request->jumlah,
                 'status' => 'dipinjam',
@@ -87,7 +96,18 @@ class PeminjamanController extends Controller
                 // Return Stock
                 $peminjaman->barang->increment('stok', $peminjaman->jumlah);
             }
-            // If just updating text or dates without status change logic (simplification)
+            // Check if status changing from 'kembali' to 'dipinjam' (Undo Return)
+            elseif ($peminjaman->status == 'kembali' && $request->status == 'dipinjam') {
+                $peminjaman->update([
+                    'status' => 'dipinjam',
+                    'tgl_kembali' => null,
+                    'keterangan' => $request->keterangan ?? $peminjaman->keterangan,
+                ]);
+
+                // Decrease Stock again
+                $peminjaman->barang->decrement('stok', $peminjaman->jumlah);
+            }
+            // If just updating text or dates without status change
             else {
                 $peminjaman->update($request->only('status', 'tgl_kembali', 'keterangan'));
             }

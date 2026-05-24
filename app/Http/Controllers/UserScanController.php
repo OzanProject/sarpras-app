@@ -60,17 +60,31 @@ class UserScanController extends Controller
                     ->first();
 
         if ($loan) {
-            // Proses Pengembalian
-            $loan->update([
-                'status' => 'kembali',
-                'tgl_kembali' => now(),
-            ]);
+            \Illuminate\Support\Facades\DB::transaction(function () use ($loan, $barang) {
+                // Proses Pengembalian
+                $loan->update([
+                    'status' => 'kembali',
+                    'tgl_kembali' => now(),
+                ]);
 
-            // Update Stok Barang (+1)
-            $barang->increment('stok');
+                // Update Stok Barang sesuai jumlah yang dipinjam
+                $barang->increment('stok', $loan->jumlah);
+            });
 
             return redirect()->route('user.scan.index')->with('success', 'Berhasil! Barang ' . $barang->nama . ' telah dikembalikan.');
         } else {
+            // Jika tidak meminjam, cek apakah user memiliki hak akses untuk mencatat peminjaman (seperti yang ditambahkan admin)
+            if ($user->can('peminjaman.action')) {
+                return redirect()->route('peminjaman.create', ['barang_id' => $barang->id])
+                    ->with('success', 'Barang ditemukan: ' . $barang->nama . '. Silakan catat peminjaman.');
+            }
+            
+            // Jika user biasa dan barang tersedia, arahkan ke detail publik untuk diajukan peminjamannya
+            if ($barang->stok > 0) {
+                return redirect()->route('scan.barcode', ['kode_barang' => $barang->kode_barang])
+                    ->with('info', 'Anda tidak sedang meminjam barang ini. Anda dapat mengajukan peminjaman dari halaman ini.');
+            }
+
             return redirect()->route('user.scan.index')->with('error', 'Gagal! Anda tidak sedang meminjam barang ini (' . $barang->nama . ').');
         }
     }
