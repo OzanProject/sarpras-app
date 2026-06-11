@@ -47,6 +47,7 @@ class BarangController extends Controller
             'stok' => 'required|integer|min:0',
             'kondisi' => 'required|in:baik,rusak,perbaikan',
             'lokasi' => 'nullable|string',
+            'tahun_perolehan' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -85,6 +86,7 @@ class BarangController extends Controller
             'stok' => 'required|integer|min:0',
             'kondisi' => 'required|in:baik,rusak,perbaikan',
             'lokasi' => 'nullable|string',
+            'tahun_perolehan' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

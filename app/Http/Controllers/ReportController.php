@@ -14,6 +14,8 @@ class ReportController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
         $status = $request->input('status');
+        $room_id = $request->input('room_id');
+        $rooms = \App\Models\Room::all();
 
         $type = $request->input('type', 'peminjaman');
 
@@ -36,10 +38,13 @@ class ReportController extends Controller
             if ($status) {
                 $barangQuery->where('kondisi', $status);
             }
+            if ($room_id) {
+                $barangQuery->where('room_id', $room_id);
+            }
             $barangs = $barangQuery->get();
         }
 
-        return view('admin.report.index', compact('peminjamans', 'barangs', 'startDate', 'endDate', 'status', 'type'));
+        return view('admin.report.index', compact('peminjamans', 'barangs', 'startDate', 'endDate', 'status', 'type', 'room_id', 'rooms'));
     }
 
     public function print(Request $request)
@@ -48,6 +53,8 @@ class ReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $status = $request->input('status');
+        $room_id = $request->input('room_id');
+        $rooms = \App\Models\Room::all();
 
         $type = $request->input('type', 'peminjaman');
 
@@ -69,9 +76,12 @@ class ReportController extends Controller
             if ($status) {
                 $barangQuery->where('kondisi', $status);
             }
+            if ($room_id) {
+                $barangQuery->where('room_id', $room_id);
+            }
             $barangs = $barangQuery->get();
         }
 
-        return view('admin.report.print', compact('peminjamans', 'barangs', 'startDate', 'endDate', 'status', 'type'));
+        return view('admin.report.print', compact('peminjamans', 'barangs', 'startDate', 'endDate', 'status', 'type', 'room_id', 'rooms'));
     }
 }

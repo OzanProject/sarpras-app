@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="kondisi" class="form-label">Kondisi</label>
                         <select class="form-select" id="kondisi" name="kondisi" required>
                             <option value="baik" {{ $barang->kondisi == 'baik' ? 'selected' : '' }}>Baik</option>
@@ -46,7 +46,7 @@
                             <option value="perbaikan" {{ $barang->kondisi == 'perbaikan' ? 'selected' : '' }}>Dalam Perbaikan</option>
                         </select>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="room_id" class="form-label">Ruangan</label>
                         <select class="form-select" id="room_id" name="room_id">
                             <option value="">Pilih Ruangan</option>
@@ -54,6 +54,10 @@
                                 <option value="{{ $room->id }}" {{ $barang->room_id == $room->id ? 'selected' : '' }}>{{ $room->nama }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
+                        <input type="number" class="form-control" id="tahun_perolehan" name="tahun_perolehan" min="1900" max="{{ date('Y') + 1 }}" value="{{ $barang->tahun_perolehan }}" placeholder="Contoh: 2024">
                     </div>
                 </div>
 

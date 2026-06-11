@@ -580,6 +580,9 @@
                     <button type="submit" class="btn-search">
                         <i class="fa fa-search"></i> Cari
                     </button>
+                    <a href="{{ route('public.scan') }}" class="btn-search" style="background: linear-gradient(135deg, #10b981, #059669); text-decoration: none;">
+                        <i class="fa fa-qrcode"></i> Scan QR
+                    </a>
                 </div>
             </form>
         </div>

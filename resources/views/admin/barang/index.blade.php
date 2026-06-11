@@ -75,6 +75,7 @@
                             <th scope="col">Kategori</th>
                             <th scope="col">Stok</th>
                             <th scope="col">Kondisi</th>
+                            <th scope="col">Tahun</th>
                             <th scope="col">Lokasi</th>
                             <th scope="col">PJ Lokasi</th>
                             <th scope="col">Aksi</th>
@@ -96,6 +97,7 @@
                                     {{ ucfirst($barang->kondisi) }}
                                 </span>
                             </td>
+                            <td>{{ $barang->tahun_perolehan ?? '-' }}</td>
                             <td>{{ $barang->room->nama ?? '-' }}</td>
                             <td>{{ $barang->room->pj_ruangan ?? '-' }}</td>
                             <td>
@@ -112,7 +114,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="text-center">Belum ada data barang.</td>
+                            <td colspan="10" class="text-center">Belum ada data barang.</td>
                         </tr>
                         @endforelse
                     </tbody>

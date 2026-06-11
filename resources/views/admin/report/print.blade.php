@@ -26,6 +26,10 @@
             <p>Periode: {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}</p>
         @else
             <p>Laporan Total Aset / Barang Keseluruhan</p>
+            @if($room_id)
+                @php $selectedRoom = $rooms->where('id', $room_id)->first(); @endphp
+                <p>Ruangan: {{ $selectedRoom ? $selectedRoom->nama : '-' }}</p>
+            @endif
             <p>Tanggal Cetak: {{ now()->translatedFormat('d F Y') }}</p>
         @endif
     </div>

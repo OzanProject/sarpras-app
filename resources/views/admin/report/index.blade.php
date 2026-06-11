@@ -15,7 +15,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $type == 'aset' ? 'active bg-primary text-white' : 'bg-light text-dark' }} px-4 py-2 fw-semibold rounded-pill" 
-                       href="{{ route('report.index', ['type' => 'aset', 'start_date' => $startDate, 'end_date' => $endDate, 'status' => $status]) }}">
+                       href="{{ route('report.index', ['type' => 'aset', 'start_date' => $startDate, 'end_date' => $endDate, 'status' => $status, 'room_id' => $room_id]) }}">
                         <i class="fa fa-boxes me-2"></i>Laporan Total Aset/Barang
                     </a>
                 </li>
@@ -57,9 +57,20 @@
                             @endif
                         </select>
                     </div>
+                    @if($type == 'aset')
+                    <div class="col-md-3">
+                        <label class="form-label">Ruangan</label>
+                        <select name="room_id" class="form-select">
+                            <option value="">Semua Ruangan</option>
+                            @foreach($rooms as $room)
+                                <option value="{{ $room->id }}" {{ $room_id == $room->id ? 'selected' : '' }}>{{ $room->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100 me-2"><i class="fa fa-filter me-2"></i>Filter</button>
-                        <a href="{{ route('report.print', ['type' => $type, 'start_date' => $startDate, 'end_date' => $endDate, 'status' => $status]) }}" target="_blank" class="btn btn-success w-100"><i class="fa fa-print me-2"></i>Cetak</a>
+                        <a href="{{ route('report.print', ['type' => $type, 'start_date' => $startDate, 'end_date' => $endDate, 'status' => $status, 'room_id' => $room_id]) }}" target="_blank" class="btn btn-success w-100"><i class="fa fa-print me-2"></i>Cetak</a>
                     </div>
                 </div>
             </form>

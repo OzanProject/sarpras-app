@@ -76,6 +76,10 @@
                                 <td>{{ $barang->room->pj_ruangan ?? '-' }}</td>
                             </tr>
                             <tr>
+                                <th>Tahun Perolehan</th>
+                                <td>{{ $barang->tahun_perolehan ?? '-' }}</td>
+                            </tr>
+                            <tr>
                                 <th>Terakhir Update</th>
                                 <td>{{ $barang->updated_at->format('d M Y H:i') }}</td>
                             </tr>

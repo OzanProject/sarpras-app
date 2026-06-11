@@ -140,9 +140,59 @@
                         </tbody>
                     </table>
 
-                    <div class="text-center mt-4">
+                    <div class="text-center mt-4 mb-4">
                         <a href="{{ url('/') }}" class="btn-home"><i class="fa fa-arrow-left me-2"></i>Kembali ke Beranda</a>
                     </div>
+
+                    <hr class="my-4">
+
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            <i class="fa fa-check-circle me-2"></i>{{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            <i class="fa fa-exclamation-circle me-2"></i>{{ session('error') }}
+                        </div>
+                    @endif
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if($barang->stok > 0)
+                        <div class="card border-0 bg-light p-4 rounded-3">
+                            <h5 class="fw-bold mb-3"><i class="fa fa-hand-holding me-2"></i>Form Peminjaman</h5>
+                            <form action="{{ route('public.pinjam') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="barang_id" value="{{ $barang->id }}">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Nama Peminjam</label>
+                                    <input type="text" name="nama_peminjam" class="form-control form-control-lg" placeholder="Masukkan nama lengkap" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Jumlah Pinjam</label>
+                                    <input type="number" name="jumlah" class="form-control form-control-lg" value="1" min="1" max="{{ $barang->stok }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Keterangan / Keperluan</label>
+                                    <textarea name="keterangan" class="form-control" rows="3" placeholder="Contoh: Untuk kegiatan OSIS"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Ajukan Peminjaman</button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="alert alert-warning text-center">
+                            <i class="fa fa-info-circle me-2"></i>Maaf, stok barang sedang kosong sehingga tidak bisa dipinjam saat ini.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
