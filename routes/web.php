@@ -74,6 +74,7 @@ Route::get('/', [\App\Http\Controllers\PublicController::class, 'index'])->name(
 Route::get('/scan-barcode/{kode_barang}', [\App\Http\Controllers\PublicController::class, 'scanBarcode'])->name('public.scan-barcode');
 Route::get('/public-scan', [\App\Http\Controllers\PublicController::class, 'scanPage'])->name('public.scan');
 Route::post('/public-pinjam', [\App\Http\Controllers\PublicController::class, 'pinjam'])->name('public.pinjam')->middleware('throttle:5,1');
+Route::post('/public-kembali', [\App\Http\Controllers\PublicController::class, 'kembali'])->name('public.kembali');
 
 Route::middleware('auth')->group(function () {
     Route::get('/verify-email', EmailVerificationPromptController::class)

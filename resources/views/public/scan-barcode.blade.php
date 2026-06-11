@@ -14,7 +14,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <link href="{{ asset('darkpan/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
     <style>
         body {
@@ -166,38 +170,87 @@
                         </div>
                     @endif
 
-                    @if($barang->stok > 0)
-                        <div class="card border-0 bg-light p-4 rounded-3">
-                            <h5 class="fw-bold mb-3"><i class="fa fa-hand-holding me-2"></i>Form Peminjaman</h5>
-                            <form action="{{ route('public.pinjam') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="barang_id" value="{{ $barang->id }}">
-                                
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Nama Peminjam</label>
-                                    <input type="text" name="nama_peminjam" class="form-control form-control-lg" placeholder="Masukkan nama lengkap" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Jumlah Pinjam</label>
-                                    <input type="number" name="jumlah" class="form-control form-control-lg" value="1" min="1" max="{{ $barang->stok }}" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Keterangan / Keperluan</label>
-                                    <textarea name="keterangan" class="form-control" rows="3" placeholder="Contoh: Untuk kegiatan OSIS"></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Ajukan Peminjaman</button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="alert alert-warning text-center">
-                            <i class="fa fa-info-circle me-2"></i>Maaf, stok barang sedang kosong sehingga tidak bisa dipinjam saat ini.
-                        </div>
+                    @if($type !== 'kembali')
+                        @if($barang->stok > 0)
+                            <div class="card border-0 shadow-sm p-4 rounded-4" style="background-color: #ffffff;">
+                                <h5 class="fw-bold mb-3"><i class="fa fa-hand-holding me-2"></i>Form Peminjaman</h5>
+                                <form action="{{ route('public.pinjam') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="barang_id" value="{{ $barang->id }}">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Nama Siswa / Peminjam</label>
+                                        <input type="text" name="nama_peminjam" class="form-control form-control-lg" placeholder="Masukkan nama lengkap siswa" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Penanggung Jawab (Guru)</label>
+                                        <select name="user_id" class="form-select select2" required>
+                                            <option value="">Pilih Guru / Ketik untuk mencari...</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Jumlah Pinjam</label>
+                                        <input type="number" name="jumlah" class="form-control form-control-lg" value="1" min="1" max="{{ $barang->stok }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Keterangan / Keperluan</label>
+                                        <textarea name="keterangan" class="form-control" rows="3" placeholder="Contoh: Untuk kegiatan OSIS"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Ajukan Peminjaman</button>
+                                </form>
+                            </div>
+                        @else
+                            <div class="alert alert-warning text-center">
+                                <i class="fa fa-info-circle me-2"></i>Maaf, stok barang sedang kosong sehingga tidak bisa dipinjam saat ini.
+                            </div>
+                        @endif
+                    @endif
+
+                    @if($type === 'kembali')
+                        @if($activePeminjamans->count() > 0)
+                            <div class="card border-0 shadow-sm p-4 rounded-4" style="background-color: #ffffff;">
+                                <h5 class="fw-bold mb-3 text-success"><i class="fa fa-undo me-2"></i>Form Pengembalian</h5>
+                                <form action="{{ route('public.kembali') }}" method="POST">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Siapa yang mengembalikan?</label>
+                                        <select name="peminjaman_id" class="form-select select2" required>
+                                            <option value="">Cari dan pilih nama peminjam...</option>
+                                            @foreach($activePeminjamans as $pinjam)
+                                                <option value="{{ $pinjam->id }}">{{ $pinjam->nama_peminjam }} ({{ $pinjam->jumlah }} Unit) - Dipinjam: {{ $pinjam->tgl_pinjam->format('d M Y') }}</option>
+                                            @endforeach
+                                        </select>
+                                        <small class="text-muted d-block mt-1">Pilih nama Anda jika ingin mengembalikan barang ini.</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-lg w-100 fw-bold"><i class="fa fa-check-circle me-2"></i>Kembalikan Barang</button>
+                                </form>
+                            </div>
+                        @else
+                            <div class="alert alert-info text-center">
+                                <i class="fa fa-check-circle me-2"></i>Tidak ada data peminjaman aktif untuk barang ini.
+                            </div>
+                        @endif
                     @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Pilih Nama / Ketik untuk mencari...',
+            width: '100%'
+        });
+    });
+</script>
 
 </body>
 </html>

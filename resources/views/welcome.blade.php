@@ -20,7 +20,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <link href="{{ asset('darkpan/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -542,15 +542,21 @@
             <span>{{ $global_settings['school_name'] ?? 'Sarana Prasarana' }}</span>
         </a>
 
-        <div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('public.scan', ['type' => 'pinjam']) }}" class="btn-login" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i class="fa fa-qrcode"></i> <span class="d-none d-md-inline">Scan Pinjam</span>
+            </a>
+            <a href="{{ route('public.scan', ['type' => 'kembali']) }}" class="btn-login" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i class="fa fa-undo"></i> <span class="d-none d-md-inline">Scan Kembali</span>
+            </a>
             @if (Route::has('login'))
                 @auth
                     <a href="{{ route('dashboard') }}" class="btn-login">
-                        <i class="fa fa-th-large"></i> Dashboard
+                        <i class="fa fa-th-large"></i> <span class="d-none d-md-inline">Dashboard</span>
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="btn-login">
-                        <i class="fa fa-sign-in-alt"></i> Login Staff
+                        <i class="fa fa-sign-in-alt"></i> <span class="d-none d-md-inline">Login Staff</span>
                     </a>
                 @endauth
             @endif
@@ -580,9 +586,6 @@
                     <button type="submit" class="btn-search">
                         <i class="fa fa-search"></i> Cari
                     </button>
-                    <a href="{{ route('public.scan') }}" class="btn-search" style="background: linear-gradient(135deg, #10b981, #059669); text-decoration: none;">
-                        <i class="fa fa-qrcode"></i> Scan QR
-                    </a>
                 </div>
             </form>
         </div>
